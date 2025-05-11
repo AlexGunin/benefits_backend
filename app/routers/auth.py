@@ -25,7 +25,7 @@ async def register_user(
         created_user = await user_service.add(new_user_data)
 
         access_token = auth_service.create_access_token({"user_id": user.id, "role": user.role})
-        response.set_cookie("access_token", access_token)
+        response.set_cookie("access_token", access_token, samesite="lax", httponly=True, secure=True, )
 
         await session.commit()
         return UserRead.model_validate(created_user)
@@ -51,7 +51,8 @@ async def login_user(
         raise HTTPException(status_code=401, detail="Пароль неверный")
 
     access_token = auth_service.create_access_token({"user_id": user.id, "role": user.role})
-    response.set_cookie("access_token", access_token, samesite="lax")
+    response.set_cookie("access_token", access_token, samesite="lax", httponly=True,secure=True,)
+
 
     return UserRead.model_validate(user)
 
@@ -70,7 +71,7 @@ async def login_anonym(
     await session.commit()
 
     access_token = auth_service.create_access_token({"user_id": created_user.id, "role": created_user.role})
-    response.set_cookie("access_token", access_token, samesite="lax")
+    response.set_cookie("access_token", access_token, samesite="lax", httponly=True,secure=True,)
 
     return UserRead.model_validate(created_user)
 
