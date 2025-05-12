@@ -2,3 +2,4 @@
 .env.development
 .env.production
 benefits.db
+venv
