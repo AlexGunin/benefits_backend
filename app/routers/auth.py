@@ -2,17 +2,17 @@ from fastapi import APIRouter, HTTPException, Response
 
 from app.constants.user import RoleEnum
 from app.dependencies import deps
+from app.schemas.auth import AuthResponse
 from app.schemas.user import UserCreate, UserLogin, UserRead
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
-@router.post("/register")
+@router.post("/register", response_model=AuthResponse)
 async def register_user(
         data: UserCreate,
         auth_service: deps.services.auth,
         session: deps.session,
         user_service: deps.services.users,
-        response: Response
 ):
     try:
         user = await user_service.get_by_nick(data.nickname)
@@ -25,20 +25,20 @@ async def register_user(
         created_user = await user_service.add(new_user_data)
 
         access_token = auth_service.create_access_token({"user_id": user.id, "role": user.role})
-        response.set_cookie("access_token", access_token, samesite="none", httponly=True, secure=True, )
+        # response.set_cookie("access_token", access_token, samesite="none", httponly=True, secure=True, )
 
         await session.commit()
-        return UserRead.model_validate(created_user)
+
+        return {"user": UserRead.model_validate(created_user), "access_token": access_token}
     except Exception as e:
         await session.rollback()
         raise HTTPException(status_code=400, detail=f"Ошибка создания пользователя: {str(e)}")
 
 
 
-@router.post("/login", response_model=UserRead)
+@router.post("/login", response_model=AuthResponse)
 async def login_user(
         data: UserLogin,
-        response: Response,
         user_service: deps.services.users,
         auth_service: deps.services.auth
 ):
@@ -51,18 +51,17 @@ async def login_user(
         raise HTTPException(status_code=401, detail="Пароль неверный")
 
     access_token = auth_service.create_access_token({"user_id": user.id, "role": user.role})
-    response.set_cookie("access_token", access_token, samesite="none", httponly=True,secure=True,)
+    # response.set_cookie("access_token", access_token, samesite="none", httponly=True,secure=True,)
 
 
-    return UserRead.model_validate(user)
+    return {"user": UserRead.model_validate(user), "access_token":access_token }
 
 
-@router.post("/anonym", response_model=UserRead)
+@router.post("/anonym", response_model=AuthResponse)
 async def login_anonym(
         user_service: deps.services.users,
         auth_service: deps.services.auth,
         session: deps.session,
-        response: Response
 ):
     new_user_data = UserCreate(name="Anonym", nickname="anonym", password="123", role=RoleEnum.USER)
 
@@ -71,9 +70,8 @@ async def login_anonym(
     await session.commit()
 
     access_token = auth_service.create_access_token({"user_id": created_user.id, "role": created_user.role})
-    response.set_cookie("access_token", access_token, samesite="none", httponly=True,secure=True,)
 
-    return UserRead.model_validate(created_user)
+    return {"user": UserRead.model_validate(created_user), "access_token":access_token }
 
 @router.get("/me", response_model=UserRead)
 async def get_me(
@@ -86,6 +84,6 @@ async def get_me(
 
 
 @router.post("/logout")
-async def logout(response: Response):
-    response.delete_cookie("access_token")
+async def logout():
+    # response.delete_cookie("access_token")
     return {"status": "OK"}

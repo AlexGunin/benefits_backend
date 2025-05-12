@@ -20,10 +20,18 @@ class Services:
 
 
 def get_token(request: Request) -> str:
-    token = request.cookies.get("access_token", None)
-    if not token:
+    auth_header = request.headers.get("Authorization")
+
+    if not auth_header or not auth_header.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Вы не предоставили токен доступа")
-    return token
+
+    return auth_header.split(" ")[1]
+
+# def get_token(request: Request) -> str:
+#     token = request.cookies.get("access_token", None)
+#     if not token:
+#         raise HTTPException(status_code=401, detail="Вы не предоставили токен доступа")
+#     return token
 
 
 def get_current_user_id(token: str = Depends(get_token), auth_service = Depends(get_auth_service)) -> int:
