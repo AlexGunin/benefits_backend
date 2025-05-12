@@ -3,6 +3,7 @@ from typing import List
 from fastapi import APIRouter
 
 from app.dependencies import deps
+from app.schemas.benefit import BenefitInOrder
 from app.schemas.order import OrderCreate, OrderRead
 
 router = APIRouter(
@@ -11,7 +12,8 @@ router = APIRouter(
 )
 
 @router.post("", response_model=OrderRead)
-async def create_order(order: OrderCreate, orders_service: deps.services.orders):
+async def create_order(user_id: deps.user_id, benefits: List[BenefitInOrder], orders_service: deps.services.orders):
+    order = OrderCreate(user_id= user_id, snapshot=benefits)
     return await orders_service.add(order)
 
 @router.get("", response_model=List[OrderRead])

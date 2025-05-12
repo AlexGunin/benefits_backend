@@ -1,13 +1,14 @@
 from typing import List
 
 from app.schemas.base import  BaseModel, ORMBaseModel
+from app.schemas.benefit import BenefitInOrder
 
 class OrderBase(BaseModel):
     user_id: int
-    benefit_ids: List[int]
+    snapshot: List[BenefitInOrder]
 
 class OrderCreate(OrderBase):
     pass
 
-class OrderRead(ORMBaseModel):
+class OrderRead(OrderBase, ORMBaseModel):
     id: int

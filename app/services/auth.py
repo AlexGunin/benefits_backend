@@ -1,7 +1,6 @@
 from datetime import datetime, timezone, timedelta
 
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, HTTPException
+from fastapi import HTTPException
 from passlib.context import CryptContext
 import jwt
 

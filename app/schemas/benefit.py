@@ -1,9 +1,15 @@
-from typing import Optional
-
 from pydantic import BaseModel, Field
 
 from app.constants.benefit import ScopeEnum
 from app.schemas.base import ORMBaseModel
+
+class BenefitInOrder(BaseModel):
+    id: int
+    name: str
+    description: str | None
+    price: int
+    scope: str
+    quantity: int
 
 class BenefitBase(BaseModel):
     name: str
