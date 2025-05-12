@@ -18,9 +18,9 @@ async def create_benefit(benefit: BenefitCreate, benefits_service: deps.services
 async def get_benefits(benefits_service: deps.services.benefits):
     return await benefits_service.get_all()
 
-@router.patch("/{benefit_id}", response_model=BenefitRead)
+@router.patch("/{benefit_id}")
 async def patch_benefits(benefit_id: int, benefit_data: BenefitUpdate, benefits_service: deps.services.benefits):
-    return await benefits_service.patch(benefit_id, benefit_data)
+    return await benefits_service.patch(benefit_id, BenefitUpdate.model_validate(benefit_data))
 
 @router.delete("/{benefit_id}", status_code=204)
 async def delete_benefits(benefit_id: int, benefits_service: deps.services.benefits):

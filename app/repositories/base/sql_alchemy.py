@@ -41,7 +41,7 @@ class SQLAlchemyRepository(AbstractRepository[Model, CreateSchema, UpdateSchema]
         try:
             entity = await self.get_by_id(id)
 
-            for key, value in data.items():
+            for key, value in data.dict(exclude_unset=True).items():
                 setattr(entity, key, value)
 
             await self.session.commit()

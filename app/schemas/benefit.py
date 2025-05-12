@@ -25,8 +25,8 @@ class BenefitRead(BenefitBase, ORMBaseModel):
     id: int
 
 class BenefitUpdate(ORMBaseModel):
-    name: str | None
-    scope: ScopeEnum | None
-    description: str | None
-    price: int | None
-    category_id: int | None
+    name: str | None = None
+    description: str | None = None
+    scope: ScopeEnum | None = None
+    price: int | None = None
+    max_usage: int | None = None
