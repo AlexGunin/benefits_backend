@@ -11,7 +11,6 @@ from app.api import api_router
 from app.middlewares.error_handle import ErrorHandlerMiddleware
 
 app = FastAPI()
-
 app.include_router(api_router)
 
 app.add_middleware(
