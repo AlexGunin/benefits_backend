@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 from typing import TypeVar, Generic, List
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 Model = TypeVar('Model')
 CreateSchema = TypeVar('CreateSchema')
 UpdateSchema = TypeVar('UpdateSchema')
 
 class AbstractRepository(ABC, Generic[Model, CreateSchema, UpdateSchema]):
+    def __init__(self, session: AsyncSession, model: Model):
+        self.session: AsyncSession = session
+        self.model: Model = model
+
     @abstractmethod
     async def add_one(self, data: CreateSchema) -> Model:
         pass

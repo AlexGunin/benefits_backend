@@ -1,11 +1,12 @@
 from typing import List
-
+from datetime import datetime
 from app.schemas.base import  BaseModel, ORMBaseModel
 from app.schemas.benefit import BenefitInOrder
 
 class OrderBase(BaseModel):
     user_id: int
     snapshot: List[BenefitInOrder]
+    created_at: datetime
 
 class OrderCreate(OrderBase):
     pass
